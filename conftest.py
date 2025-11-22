@@ -104,11 +104,7 @@ def driver_logged(driver):
     driver.delete_all_cookies()
 
     # 2. Открываем сайт — база для куков
-    driver.get("https://vikisews.com/")
-
-    # ==============================
-    # 🔵 ЗАГРУЗКА COOKIES
-    # ==============================
+    driver.get(Urls.BASE_URL)
     try:
         with open("cookies.json", "r", encoding="utf-8") as f:
             cookies = json.load(f)
@@ -128,9 +124,6 @@ def driver_logged(driver):
     except FileNotFoundError:
         pytest.skip("⚠ cookies.json не найден — сначала сохрани куки вручную (test_save_cookies)")
 
-    # ==============================
-    # 🔵 ЗАГРУЗКА LOCALSTORAGE
-    # ==============================
     try:
         with open("localstorage.json", "r", encoding="utf-8") as f:
             localstorage_data = json.loads(f.read())

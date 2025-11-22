@@ -7,15 +7,21 @@ class ProductConfig:
     а все тесты автоматически подхватывают новые локаторы.
     """
 
-    NAME = "Джуанна платье"
+    NAME = "Сувира манишка"
 
-     # Параметры по умолчанию
     HEIGHT = "162-168"
-    SIZE = "38"
+    SIZE = "M"
 
-     # Параметры по умолчанию
     HEIGHT1 = "170-176"
-    SIZE1 = "34"
+    SIZE1 = "S"
+
+    HEIGHT2 = "162-168"
+    SIZE2 = "XS"
+
+    HEIGHT3 = "178-184"
+    SIZE3 = "L"
+
+
     
 
     CARD = VykrojkiLocators.pattern_card_by_name(NAME)

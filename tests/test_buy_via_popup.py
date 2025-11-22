@@ -1,50 +1,42 @@
 import pytest
 import allure
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from pages.product_detail_page import ProductDetailPage
+from pages.checkout_page import CheckoutPage
 from utils.product_config import ProductConfig
-from locators.basket_locators import BasketLocators
-from utils.test_helpers import (
-    confirm_checkout_conditions,
-    go_to_payment,
-    wait_for_payment_iframe,
-    DEFAULT_TIMEOUT
-)
 
 
 class TestBuyProductViaPopup:
-    """Тест: покупка товара 'Джуанна платье' через popup"""
 
     @pytest.mark.smoke
     @allure.title("Покупка товара через всплывающее окно")
     @allure.description("Полный сценарий: добавление, переход к оформлению, подтверждение условий, оплата")
     def test_buy_product_via_popup(self, select_product):
 
-        # ---------- 1. Выбор товара ----------
+        # Фикстура возвращает driver уже на странице товара
         driver = select_product(
             ProductConfig.NAME,
             ProductConfig.HEIGHT,
             ProductConfig.SIZE
         )
 
-        # ---------- 2. Добавление в корзину ----------
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(ProductConfig.BASKET_DETAIL)
-        ).click()
+        detail = ProductDetailPage(driver)
+        checkout = CheckoutPage(driver)
 
-        # ---------- 3. Переход к оформлению из popup ----------
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(BasketLocators.CHECKOUT_BUTTON)
-        ).click()
+        with allure.step("Добавляем товар в корзину"):
+            detail.add_to_cart()
 
-        # ---------- 4. Подтверждение чекбоксов ----------
-        confirm_checkout_conditions(driver)
+        with allure.step("Переходим к оформлению заказа через popup"):
+            checkout.go_to_checkout_from_popup()
 
-        # ---------- 5. Переход на оплату ----------
-        go_to_payment(driver)
+        with allure.step("Подтверждаем обязательные чекбоксы"):
+            checkout.confirm_conditions()
 
-        # ---------- 6. Проверка iframe оплаты ----------
-        wait_for_payment_iframe(driver)
+        with allure.step("Переходим на оплату"):
+            checkout.go_to_payment_step()
+
+        with allure.step("Проверяем загрузку iframe оплаты"):
+            checkout.wait_payment_iframe()
+
 
 
     

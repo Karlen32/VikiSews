@@ -5,7 +5,7 @@ class LKLocators:
     """Локаторы личного кабинета"""
 
     # Кнопка открытия меню ЛК (иконка человека в шапке)
-    LK_ICON_BUTTON = (By.CSS_SELECTOR, "div.js-lk-dropdown button.header__icon-button")
+    LK_ICON_BUTTON = (By.CSS_SELECTOR, "div.js-lk-dropdown a.header__icon-button")
     # Сам выпадающий контейнер
     LK_DROPDOWN = (By.CSS_SELECTOR,"div.lk-dropdown")
 

@@ -16,13 +16,7 @@ LONG_TIMEOUT = 30
 
 
 def navigate_to_patterns(driver, timeout=DEFAULT_TIMEOUT):
-    """
-    Переход в раздел "Выкройки" -> "Все выкройки"
-    
-    Args:
-        driver: WebDriver instance
-        timeout: время ожидания (по умолчанию 15 секунд)
-    """
+   
     WebDriverWait(driver, timeout).until(
         EC.element_to_be_clickable(BaseLocators.PATTERNS_SUBMENU_LINK)
     ).click()
@@ -117,13 +111,7 @@ def select_product_params(driver, height_option, size_option, timeout=DEFAULT_TI
 
 
 def confirm_checkout_conditions(driver, timeout=DEFAULT_TIMEOUT):
-    """
-    Подтверждение условий оформления заказа (чекбоксы "Правила" и "Подписка")
     
-    Args:
-        driver: WebDriver instance
-        timeout: время ожидания
-    """
     WebDriverWait(driver, timeout).until(
         EC.element_to_be_clickable(CheckoutLocators.RULES_CHECKBOX)
     ).click()
@@ -134,13 +122,7 @@ def confirm_checkout_conditions(driver, timeout=DEFAULT_TIMEOUT):
 
 
 def go_to_payment(driver, timeout=DEFAULT_TIMEOUT):
-    """
-    Переход к оплате с прокруткой к кнопке
     
-    Args:
-        driver: WebDriver instance
-        timeout: время ожидания
-    """
     button = WebDriverWait(driver, timeout).until(
         EC.element_to_be_clickable(CheckoutLocators.GO_TO_PAYMENT_BUTTON)
     )
@@ -154,16 +136,7 @@ def go_to_payment(driver, timeout=DEFAULT_TIMEOUT):
 
 
 def wait_for_payment_iframe(driver, timeout=20):
-    """
-    Ожидание и переключение в iframe оплаты
     
-    Args:
-        driver: WebDriver instance
-        timeout: время ожидания
-        
-    Returns:
-        iframe element
-    """
     iframe = WebDriverWait(driver, timeout).until(
         EC.presence_of_element_located((By.TAG_NAME, "iframe"))
     )

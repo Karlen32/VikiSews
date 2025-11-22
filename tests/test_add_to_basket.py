@@ -1,56 +1,39 @@
 import pytest
 import allure
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from pages.product_catalog_page import ProductCatalogPage
+from pages.product_detail_page import ProductDetailPage
+from pages.basket_page import BasketPage
 from utils.product_config import ProductConfig
-# Импорты всех нужных локаторов
-from locators.basket_locators import BasketLocators
-from utils.test_helpers import navigate_to_patterns, select_product_params, DEFAULT_TIMEOUT
 
 
 class TestAddToBasket:
-    """Тест: добавление товара 'Сувира манишка' в корзину"""
 
     @pytest.mark.smoke
     @allure.title("Добавление товара 'Сувира манишка' в корзину")
     @allure.description("Проверка добавления товара в корзину: выбор параметров, добавление, переход в корзину, удаление")
     def test_add_product_to_basket(self, driver_logged):
-        driver = driver_logged
 
-        # 1️⃣ Переход в "Выкройки"
-        navigate_to_patterns(driver)
+        catalog = ProductCatalogPage(driver_logged)
+        detail = ProductDetailPage(driver_logged)
+        basket = BasketPage(driver_logged)
 
-        # 2️⃣ Кликаем по карточке "Сувира манишка"
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(ProductConfig.CARD)
-        ).click()
+        with allure.step("Переходим в каталог выкроек"):
+            catalog.open_patterns_catalog()
 
-        # 3️⃣ Выбираем параметры товара
-        select_product_params(driver, ProductConfig.HEIGHT, ProductConfig.SIZE)
+        with allure.step("Открываем товар 'Сувира манишка'"):
+            detail.open_product_from_card()
 
-        # 4️⃣ Добавляем в корзину
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(ProductConfig.BASKET_DETAIL)
-        ).click()
+        with allure.step("Выбираем параметры товара"):
+            detail.choose_params(ProductConfig.HEIGHT, ProductConfig.SIZE)
 
-        # 5️⃣ Переходим в корзину
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(BasketLocators.BASKET_BUTTON_MODAL_SECOND)
-        ).click()
+        with allure.step("Добавляем товар в корзину"):
+            detail.add_to_cart()
 
-        # 6️⃣ Проверяем, что открылась страница корзины
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.visibility_of_element_located(BasketLocators.CART_PAGE_TITLE)
-        )
+        with allure.step("Переходим в корзину через модалку"):
+            detail.go_to_cart_from_modal()
 
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(BasketLocators.DELETE_PRODUCT_BUTTON)
-        ).click()
-
-        # 7️⃣ Проверяем, что товар удалён из корзины
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until_not(
-            EC.presence_of_element_located(BasketLocators.DELETE_PRODUCT_BUTTON)
-        )
+        with allure.step("Удаляем товар из корзины"):
+            basket.delete_first_product()
 
         
    

@@ -1,115 +1,43 @@
 import pytest
 import allure
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from locators.lk_bonus_certificates_buy_locators import LKBonusCertificatesBuyLocators
-from locators.lk_locators import LKLocators
-from selenium.webdriver.common.by import By
-from locators.vykrojki_locators import VykrojkiLocators
+from pages.lk_certificates_page import LKCertificatesPage
 from data.title_text import AllTexts
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-import time
 
 
 class TestBuyCertificateSelf:
+
     @pytest.mark.smoke
     @allure.title("Покупка сертификата для себя")
-    @allure.description("Проверка покупки сертификата для себя: просмотр условий программы, выбор цвета, ввод суммы, переход к оплате")
+    @allure.description("Проверка покупки сертификата для себя: условия программы, выбор цвета, ввод суммы, оплата")
     def test_buy_certificate_self(self, driver_logged):
-        driver = driver_logged
 
-        # ---------- 🔐 Открываем меню ЛК ----------
-        lk_icon = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(LKLocators.LK_ICON_BUTTON)
-        )
-        ActionChains(driver).move_to_element(lk_icon).perform()
+        page = LKCertificatesPage(driver_logged)
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(LKLocators.MENU_BONUSES_CERTIFICATES)
-        ).click()
+        with allure.step("Открываем раздел Бонусы и сертификаты"):
+            page.open_certificates_section()
 
-        # ---------- 📄 Открываем условия программы ----------
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(LKBonusCertificatesBuyLocators.PROGRAM_CONDITIONS_BUTTON)
-        ).click()
+        with allure.step("Проверяем условия программы"):
+            page.open_program_conditions()
+            assert page.get_program_conditions_title() == AllTexts.PROGRAM_BONUSES_TITLE
+            assert page.get_program_conditions_text() == AllTexts.PROGRAM_BONUSES_TEXT
+            page.close_program_conditions()
 
-        assert WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(LKBonusCertificatesBuyLocators.PROGRAM_CONDITIONS_TITLE)
-        ).text == AllTexts.PROGRAM_BONUSES_TITLE
+        with allure.step("Открываем покупку сертификата"):
+            page.start_buy_certificate()
 
-        assert WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(LKBonusCertificatesBuyLocators.PROGRAM_CONDITIONS_TEXT)
-        ).text == AllTexts.PROGRAM_BONUSES_TEXT
+        with allure.step("Выбираем цвет"):
+            page.select_color()
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(LKBonusCertificatesBuyLocators.PROGRAM_CONDITIONS_CLOSE_BUTTON)
-        ).click()
+        with allure.step("Вводим сумму"):
+            page.enter_price(1000)
+            page.move_slider()
 
-        # ---------- 🎁 Нажимаем «Купить сертификат» ----------
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(LKBonusCertificatesBuyLocators.BUY_CERTIFICATE_BUTTON)
-        ).click()
+        with allure.step("Переходим к оплате"):
+            page.proceed_to_pay()
 
-        # ---------- 🎨 Выбор цвета ----------
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(LKBonusCertificatesBuyLocators.CERTIFICATE_COLOR_1_GREEN)
-        ).click()
+        with allure.step("Проверяем iframe оплаты"):
+            header = page.wait_payment_iframe()
+            assert header.text == AllTexts.PAYMENT_PAGE_HEADER
 
-        # ---------- 💵 Ввод суммы вручную ----------
-        price_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located(LKBonusCertificatesBuyLocators.CERTIFICATE_PRICE_INPUT)
-        )
-
-        # Скроллим так, чтобы 100% было видно
-        driver.execute_script(
-            "arguments[0].scrollIntoView({block: 'nearest'});", price_input
-        )
-        driver.execute_script(
-            "window.scrollTo(0, arguments[0].getBoundingClientRect().top + window.scrollY - 150);",
-            price_input
-        )
-
-        ActionChains(driver).move_to_element(price_input).perform()
-
-        # Ввод как у человека
-        price_input.click()
-        price_input.send_keys(Keys.CONTROL, "a")
-        price_input.send_keys(Keys.DELETE)
-
-        for ch in "1000":
-            price_input.send_keys(ch)
-            time.sleep(0.12)
-
-        price_input.send_keys(Keys.ENTER)
-
-        # ---------- 🎚 Двигаем ползунок (обновить UI) ----------
-        slider_handle = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#m-slider .noUi-handle-lower"))
-        )
-
-        actions = ActionChains(driver)
-        actions.click_and_hold(slider_handle).move_by_offset(10, 0).release().perform()
-        time.sleep(0.3)
-
-        # ---------- ⏭ Переход к оплате ----------
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(LKBonusCertificatesBuyLocators.NEXT_BUTTON)
-        ).click()
-
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(LKBonusCertificatesBuyLocators.PAY_BUTTON)
-        ).click()
-
-        # ---------- 💰 Проверка цены на странице оплаты ----------
-        iframe = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.TAG_NAME, "iframe"))
-        )
-
-        driver.switch_to.frame(iframe)
-
-        assert WebDriverWait(driver, 20).until(
-            EC.visibility_of_element_located(VykrojkiLocators.PAYMENT_PAGE_HEADER)
-        ).text == AllTexts.PAYMENT_PAGE_HEADER
 
 

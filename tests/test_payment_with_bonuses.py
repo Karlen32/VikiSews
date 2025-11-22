@@ -8,6 +8,7 @@ from locators.vykrojki_locators import VykrojkiLocators
 from locators.basket_locators import BasketLocators
 from locators.checkout_locators import CheckoutLocators
 from locators.bonuses_locators import BonusesLocators
+from utils.product_config import ProductConfig
 from utils.test_helpers import confirm_checkout_conditions, go_to_payment, DEFAULT_TIMEOUT, LONG_TIMEOUT
 
 
@@ -18,7 +19,11 @@ class TestPaymentWithBonuses:
     @allure.title("Оплата заказа бонусами из корзины")
     @allure.description("Проверка оплаты заказа бонусами: добавление товара, применение бонусов, оформление и оплата")
     def test_pay_from_cart_with_bonuses(self, select_product):
-        driver = select_product
+        driver = select_product(
+            ProductConfig.NAME,
+            ProductConfig.HEIGHT1,
+            ProductConfig.SIZE1
+        )
 
         # ---------- 🛒 Добавляем товар ----------
         WebDriverWait(driver, DEFAULT_TIMEOUT).until(
@@ -44,9 +49,16 @@ class TestPaymentWithBonuses:
         ).click()
 
         # ---------- 🧾 Переходим к оформлению ----------
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
+        checkout_button = WebDriverWait(driver, DEFAULT_TIMEOUT).until(
             EC.element_to_be_clickable(BasketLocators.CHECKOUT_BUTTON)
-        ).click()
+        )
+
+        driver.execute_script(
+            "arguments[0].scrollIntoView({block: 'center', inline: 'center'});",
+            checkout_button
+        )
+
+        checkout_button.click()
 
         # ---------- ☑️ Подтверждение условий ----------
         confirm_checkout_conditions(driver)
@@ -59,4 +71,3 @@ class TestPaymentWithBonuses:
             EC.visibility_of_element_located(CheckoutLocators.SUCCESS_TITLE)
         )
 
-        print("✅ Покупка с оплатой бонусами прошла успешно!")

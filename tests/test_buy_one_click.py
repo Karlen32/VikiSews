@@ -1,46 +1,43 @@
 import pytest
 import allure
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-from locators.vykrojki_locators import VykrojkiLocators
+from pages.product_catalog_page import ProductCatalogPage
+from pages.product_detail_page import ProductDetailPage
+from pages.checkout_page import CheckoutPage
 from utils.product_config import ProductConfig
-from utils.test_helpers import (
-    confirm_checkout_conditions,
-    go_to_payment,
-    wait_for_payment_iframe,
-    DEFAULT_TIMEOUT
-)
+from utils.test_helpers import DEFAULT_TIMEOUT  # можно вообще не использовать явно
 
 
 class TestBuyProductInOneClick:
-    """Тест: покупка товара в один клик"""
 
     @pytest.mark.smoke
-    @allure.title("Покупка товара 'Джуанна платье' в один клик")
-    @allure.description("Проверка покупки товара в один клик: выбор параметров, подтверждение условий, переход к оплате, (пока функция не доступна)")
-    def test_buy_product_in_one_click(self, select_product):
+    @allure.title("Покупка товара в один клик")
+    @allure.description("Сценарий: открываем каталог, выбираем товар, покупка в 1 клик, переход на оплату")
+    def test_buy_product_in_one_click(self, driver_logged):
+        driver = driver_logged
 
-        # ---------- 1. Открываем товар и выбираем параметры ----------
-        driver = select_product(
-            ProductConfig.NAME,
-            ProductConfig.HEIGHT,
-            ProductConfig.SIZE
-        )
+        catalog = ProductCatalogPage(driver)
+        product = ProductDetailPage(driver)
+        checkout = CheckoutPage(driver)
 
-        # ---------- 2. Кликаем “Купить в один клик” ----------
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(VykrojkiLocators.BUY_ONE_CLICK_BUTTON)
-        ).click()
+        with allure.step("Открываем каталог выкроек и карточку товара"):
+            catalog.open_patterns_catalog()
+            catalog.wait_url_contains("/vykrojki/vse-vykrojki/")
+            product.open_product_from_card()
 
-        # ---------- 3. Подтверждение условий ----------
-        confirm_checkout_conditions(driver)
+        with allure.step("Выбираем параметры товара"):
+            product.choose_params(ProductConfig.HEIGHT, ProductConfig.SIZE)
 
-        # ---------- 4. Переход к оплате ----------
-        go_to_payment(driver)
+        with allure.step("Открываем форму покупки в один клик"):
+            product.open_buy_one_click()
 
-        # ---------- 5. Проверяем, что iframe оплаты загрузился ----------
-        wait_for_payment_iframe(driver)
+        with allure.step("Подтверждаем условия заказа"):
+            checkout.confirm_conditions_step()
+
+        with allure.step("Переходим к оплате"):
+            checkout.go_to_payment_step()
+            checkout.wait_payment_iframe()
+
 
          
 
