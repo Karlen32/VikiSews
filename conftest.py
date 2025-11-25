@@ -1,48 +1,73 @@
 import pytest
 import json
 import time
-from selenium.common.exceptions import WebDriverException
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from locators.vykrojki_locators import VykrojkiLocators
 from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from webdriver_manager.chrome import ChromeDriverManager
 from urls.urls import Urls
 from utils.test_helpers import navigate_to_patterns, select_product_params, DEFAULT_TIMEOUT
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from webdriver_manager.firefox import GeckoDriverManager
+from pages.login_page import LoginPage
+from utils.credentials import Credentials
+from pages.lk_page import LKPage
 
 
-# === базовый драйвер ===
+def pytest_addoption(parser):
+    parser.addoption(
+        "--browser",
+        action="store",
+        default="chrome",
+        help="Browser to run tests: chrome or firefox"
+    )
+
+
 @pytest.fixture(scope="function")
-def driver():
-    options = Options()
-    options.add_argument("--start-maximized")
-    options.add_argument("--disable-notifications")
-    options.add_argument("--disable-popup-blocking")
-    # Больше стабильности при нестабильном DOM
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--no-sandbox")
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+def driver(request):
+    browser = request.config.getoption("--browser")
+
+    if browser == "chrome":
+        options = ChromeOptions()
+        options.add_argument("--start-maximized")
+        options.add_argument("--disable-notifications")
+        options.add_argument("--disable-popup-blocking")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
+
+        driver = webdriver.Chrome(
+            service=ChromeService(ChromeDriverManager().install()),
+            options=options
+        )
+
+    elif browser == "firefox":
+        options = FirefoxOptions()
+        options.set_preference("dom.webnotifications.enabled", False)
+        options.set_preference("dom.push.enabled", False)
+        # Firefox не умеет start-maximized как Chrome
+        options.add_argument("--width=1920")
+        options.add_argument("--height=1080")
+
+        driver = webdriver.Firefox(
+            service=FirefoxService(GeckoDriverManager().install()),
+            options=options
+        )
+
+    else:
+        raise ValueError(f"Unknown browser: {browser}")
+
     driver.implicitly_wait(5)
     yield driver
     driver.quit()
 
-
 # === фикстура с prelogin cookies (без авторизации) ===
 @pytest.fixture(scope="function")
 def driver_prelogin():
-    """
-    Стабильно загружает prelogin_cookies даже в режиме инкогнито.
-    Делает:
-    1. старт инкогнито
-    2. ждет полной загрузки страницы
-    3. добавляет куки
-    4. выполняет двойной refresh (важно!)
-    5. проверяет, что куки установились
-    """
-
-    options = Options()
+    options = ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument("--disable-notifications")
     options.add_argument("--disable-popup-blocking")
@@ -52,10 +77,11 @@ def driver_prelogin():
         options=options
     )
 
-    # 1 — открываем главную
+    # 1 — открываем главную (важно — ДО добавления cookies)
     driver.get(Urls.BASE_URL)
-    time.sleep(1)  # даем странице "осесть"
+    time.sleep(0.5)
 
+    # 2 — загружаем prelogin cookies
     try:
         with open("prelogin_cookies.json", "r", encoding="utf-8") as f:
             cookies = json.load(f)
@@ -64,47 +90,41 @@ def driver_prelogin():
         for cookie in cookies:
             cookie.pop("sameSite", None)
             cookie.pop("domain", None)
+            cookie.pop("expiry", None)     # ⚠ обязательно
 
             try:
                 driver.add_cookie(cookie)
                 applied += 1
-            except WebDriverException:
+            except Exception:
                 pass
 
         print(f"✅ Загружено prelogin cookies: {applied} из {len(cookies)}")
 
     except FileNotFoundError:
-        pytest.skip("⚠ prelogin_cookies.json не найден — сначала запусти test_save_prelogin_cookies.py")
+        pytest.skip("⚠ prelogin_cookies.json не найден — сначала создай через test_save_prelogin_cookies")
 
-    # 3 — критически важно: дважды обновить
+    # 3 — два обновления для активации cookies
     driver.refresh()
-    time.sleep(0.6)
+    time.sleep(0.5)
     driver.refresh()
 
-    # 4 — проверка что куки действительно живые
-    current_cookies = driver.get_cookies()
-    if len(current_cookies) == 0:
-        raise RuntimeError("❌ Cookies НЕ применились! Chrome в инкогнито их отбросил.")
+    # 4 — Проверяем, что есть хотя бы одна кука, которую ты загрузил
+    driver.get_cookies()
+
+    if applied == 0:
+        raise RuntimeError("❌ Ни одна cookie не была применена — проверь файл prelogin_cookies.json")
 
     print("🎉 prelogin cookies успешно применены!")
-
+    
     yield driver
     driver.quit()
 
 
-# === фикстура с login cookies (уже авторизованный пользователь) ===
+# Авторизованный пользователь
 @pytest.fixture(scope="function")
 def driver_logged(driver):
-    """
-    Загружает логин-сессию через cookies и localStorage.
-    Работает даже если localstorage.json отсутствует.
-    """
-
-    # 1. Полная очистка куков перед началом
-    driver.delete_all_cookies()
-
-    # 2. Открываем сайт — база для куков
     driver.get(Urls.BASE_URL)
+
     try:
         with open("cookies.json", "r", encoding="utf-8") as f:
             cookies = json.load(f)
@@ -112,43 +132,16 @@ def driver_logged(driver):
         for cookie in cookies:
             cookie.pop("sameSite", None)
             cookie.pop("domain", None)
-
-            try:
-                driver.add_cookie(cookie)
-            except WebDriverException:
-                # Пропускаем куки, которые Selenium не принимает
-                pass
-
-        print(f"✅ Загружено cookies: {len(cookies)}")
+            cookie.pop("expiry", None)
+            driver.add_cookie(cookie)
 
     except FileNotFoundError:
         pytest.skip("⚠ cookies.json не найден — сначала сохрани куки вручную (test_save_cookies)")
 
-    try:
-        with open("localstorage.json", "r", encoding="utf-8") as f:
-            localstorage_data = json.loads(f.read())
-
-        for key, value in localstorage_data.items():
-            driver.execute_script(
-                "window.localStorage.setItem(arguments[0], arguments[1]);",
-                key, value
-            )
-
-        print("✅ localStorage восстановлен")
-
-    except FileNotFoundError:
-        print("⚠ localstorage.json не найден — продолжаю без него (это НЕ ошибка)")
-
-    # 5. Финальный refresh — сессия активируется
     driver.refresh()
 
     return driver
 
-
-# === базовый URL ===
-@pytest.fixture(scope="session")
-def base_url():
-    return Urls.BASE_URL
 
 
 
@@ -177,3 +170,21 @@ def select_product(driver_logged):
         return driver
 
     return _select
+
+
+@pytest.fixture
+def driver_login_ui(driver):
+    driver.get(Urls.BASE_URL)
+
+    login = LoginPage(driver)
+    login.open_login()
+    login.enter_email(Credentials.USER["email"])
+    login.enter_password(Credentials.USER["password"])
+    login.submit()
+
+    # Ожидание появления профиля или другой индикатор успешного входа
+    lk = LKPage(driver)
+    lk.open_menu()
+
+    yield driver
+    driver.quit()

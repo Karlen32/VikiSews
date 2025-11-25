@@ -37,7 +37,7 @@ class ProductCatalogPage(BasePage):
             arguments[0].dispatchEvent(new MouseEvent('mouseenter', {bubbles:true}));
         """, card)
 
-        time.sleep(0.2)
+        time.sleep(2)
 
     @allure.step("Нажимаем кнопку избранного на карточке")
     def click_favorite(self):
@@ -57,7 +57,7 @@ class ProductCatalogPage(BasePage):
     # ==========================
     #     Параметры товара в модалке
     # ==========================
-    @allure.step("Выбираем параметры товара: рост {1}, размер {2}")
+    @allure.step("Выбираем параметры товара: рост {height}, размер {size}")
     def select_product_params(self, height, size):
         from utils.test_helpers import select_product_params
         select_product_params(self.driver, height, size, use_modal=True)

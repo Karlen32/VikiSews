@@ -14,6 +14,10 @@ class LKPage(BasePage):
     def open_menu(self):
         self.hover(LKLocators.LK_ICON_BUTTON)
 
+    @allure.step("клик по иконке входа")
+    def click_login_icon(self):
+        self.click(LKLocators.LK_ICON_BUTTON)
+
     @allure.step("Переходим в профиль")
     def go_to_profile(self):
         self.click(LKLocators.MENU_PROFILE)
@@ -48,8 +52,7 @@ class LKPage(BasePage):
     @allure.step("Сохраняем персональные данные")
     def save_personal_data(self):
         save_btn = self.wait_visible(LKPersonalDataLocators.SAVE_CHANGES_BUTTON)
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", save_btn)
-        self.driver.execute_script("window.scrollBy(0, -150);")
+        self.driver.execute_script( "arguments[0].scrollIntoView({block: 'center', behavior: 'instant'});", save_btn )
         save_btn.click()
 
     # ==========================
@@ -78,4 +81,6 @@ class LKPage(BasePage):
     def wait_success_message(self, text):
         locator = LKLocators.get_message_locator(text)
         return self.wait_visible(locator)
+
+
 

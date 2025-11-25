@@ -25,3 +25,16 @@ class BasketPage(BasePage):
     def click_modal_add_buttons(self):
         self.wait_clickable(BasketLocators.BASKET_BUTTON_MODAL_FIRST).click()
         self.wait_clickable(BasketLocators.BASKET_BUTTON_MODAL_SECOND).click()
+
+
+    @allure.step("Открываем корзину из модального окна")
+    def open_from_modal(self):
+        self.click(BasketLocators.BASKET_BUTTON_MODAL_SECOND)
+
+    @allure.step("Переходим к оформлению заказа")
+    def open_checkout(self):
+        btn = self.wait_clickable(BasketLocators.CHECKOUT_BUTTON)
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", btn)
+        btn.click()
+
+    

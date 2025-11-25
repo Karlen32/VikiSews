@@ -6,6 +6,7 @@ from utils.test_helpers import select_product_params
 from locators.vykrojki_locators import VykrojkiLocators
 
 
+
 class ProductDetailPage(BasePage):
 
     @allure.step("Открываем товар по клику на карточку")
@@ -14,7 +15,7 @@ class ProductDetailPage(BasePage):
 
     @allure.step("Выбираем параметры товара: рост {1}, размер {2}")
     def choose_params(self, height, size):
-        select_product_params(self.driver, height, size)
+        select_product_params(self.driver, height, size) 
 
     @allure.step("Добавляем товар в корзину на странице товара")
     def add_to_cart(self):
@@ -27,3 +28,7 @@ class ProductDetailPage(BasePage):
     @allure.step("Покупка в 1 клик — открываем форму")
     def open_buy_one_click(self):
         self.click(VykrojkiLocators.BUY_ONE_CLICK_BUTTON)
+
+    @allure.step("Добавляем товар в корзину")
+    def add_to_cart_button(self):
+        self.click(VykrojkiLocators.ADD_TO_BASKET_BUTTON)

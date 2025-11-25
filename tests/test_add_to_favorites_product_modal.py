@@ -2,7 +2,7 @@ import pytest
 import allure
 from pages.product_catalog_page import ProductCatalogPage
 from pages.favorites_page import FavoritesPage
-
+import time
 
 class TestAddToFavoritesFromProductModal:
 
@@ -19,6 +19,7 @@ class TestAddToFavoritesFromProductModal:
 
         with allure.step("Находим и ховерим карточку"):
             card = page.get_first_card()
+            time.sleep(1)
             page.hover_card(card)
 
         with allure.step("Добавляем товар в избранное"):

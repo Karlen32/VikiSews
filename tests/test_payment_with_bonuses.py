@@ -1,73 +1,53 @@
 import pytest
 import allure
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-# Импорты локаторов
-from locators.vykrojki_locators import VykrojkiLocators
-from locators.basket_locators import BasketLocators
-from locators.checkout_locators import CheckoutLocators
-from locators.bonuses_locators import BonusesLocators
+import time
+from pages.product_detail_page import ProductDetailPage
+from pages.basket_page import BasketPage
+from pages.bonuses_page import BonusesPage
+from pages.checkout_page import CheckoutPage
 from utils.product_config import ProductConfig
-from utils.test_helpers import confirm_checkout_conditions, go_to_payment, DEFAULT_TIMEOUT, LONG_TIMEOUT
 
 
 class TestPaymentWithBonuses:
-    """Тест: оплата из корзины бонусами"""
 
     @pytest.mark.smoke
     @allure.title("Оплата заказа бонусами из корзины")
     @allure.description("Проверка оплаты заказа бонусами: добавление товара, применение бонусов, оформление и оплата")
     def test_pay_from_cart_with_bonuses(self, select_product):
+
         driver = select_product(
             ProductConfig.NAME,
             ProductConfig.HEIGHT1,
             ProductConfig.SIZE1
         )
 
-        # ---------- 🛒 Добавляем товар ----------
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(VykrojkiLocators.ADD_TO_BASKET_BUTTON)
-        ).click()
+        detail = ProductDetailPage(driver)
+        basket = BasketPage(driver)
+        bonuses = BonusesPage(driver)
+        checkout = CheckoutPage(driver)
 
-        # ---------- 🧺 Переход в корзину ----------
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(BasketLocators.BASKET_BUTTON_MODAL_SECOND)
-        ).click()
+        with allure.step("Добавляем товар в корзину"):
+            detail.add_to_cart()
 
-        # ---------- 💰 Применяем бонусы ----------
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(BonusesLocators.BONUS_CHECKBOX)
-        ).click()
+        with allure.step("Переходим в корзину"):
+            basket.open_from_modal()
 
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.visibility_of_element_located(BonusesLocators.BONUS_INPUT)
-        ).send_keys("220")
+        with allure.step("Применяем бонусы"):
+            bonuses.apply_bonuses("220")
 
-        WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(BonusesLocators.BONUS_APPLY_BUTTON)
-        ).click()
+        with allure.step("Переходим к оформлению"):
+            basket.open_checkout()
 
-        # ---------- 🧾 Переходим к оформлению ----------
-        checkout_button = WebDriverWait(driver, DEFAULT_TIMEOUT).until(
-            EC.element_to_be_clickable(BasketLocators.CHECKOUT_BUTTON)
-        )
+        with allure.step("Подтверждаем условия"):
+            checkout.confirm_conditions()
 
-        driver.execute_script(
-            "arguments[0].scrollIntoView({block: 'center', inline: 'center'});",
-            checkout_button
-        )
+        # ---- Здесь добавляем скролл ----
+        checkout.driver.execute_script("window.scrollBy(0, 300);")
+        time.sleep(0.2)
 
-        checkout_button.click()
+        with allure.step("Переходим к оплате"):
+            checkout.go_to_payment()
 
-        # ---------- ☑️ Подтверждение условий ----------
-        confirm_checkout_conditions(driver)
-
-        # ---------- 🚀 Переход к оплате ----------
-        go_to_payment(driver)
-
-        # ---------- ✅ Проверка успешной оплаты ----------
-        WebDriverWait(driver, LONG_TIMEOUT).until(
-            EC.visibility_of_element_located(CheckoutLocators.SUCCESS_TITLE)
-        )
+        with allure.step("Проверяем успешную оплату"):
+            checkout.wait_success()
 

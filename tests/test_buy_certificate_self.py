@@ -16,7 +16,7 @@ class TestBuyCertificateSelf:
         with allure.step("Открываем раздел Бонусы и сертификаты"):
             page.open_certificates_section()
 
-        with allure.step("Проверяем условия программы"):
+        with allure.step("Проверяем текст условий программы"):
             page.open_program_conditions()
             assert page.get_program_conditions_title() == AllTexts.PROGRAM_BONUSES_TITLE
             assert page.get_program_conditions_text() == AllTexts.PROGRAM_BONUSES_TEXT

@@ -10,7 +10,7 @@ class ProductConfig:
     NAME = "Сувира манишка"
 
     HEIGHT = "162-168"
-    SIZE = "M"
+    SIZE = "XL"
 
     HEIGHT1 = "170-176"
     SIZE1 = "S"

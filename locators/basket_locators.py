@@ -38,6 +38,11 @@ class BasketLocators:
         "//a[.//span[contains(translate(., 'ПЕРЕЙТИ К ОФОРМЛЕНИЮ', 'перейти к оформлению'), 'перейти к оформлению')]]"
     )
 
+    CHECKOUT_MODAL_BUTTON = (
+        By.XPATH,
+        "//a[contains(@class, 'js-service-button-second')]"
+    )
+
     # 🔹 Кнопка “В корзину” в первом модальном окне (button)
     BASKET_BUTTON_MODAL_FIRST = (
         By.XPATH,

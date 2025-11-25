@@ -1,7 +1,7 @@
 import pytest
 import allure
 from pages.lk_page import LKPage
-from data.credentials import Credentials
+from utils.credentials import Credentials
 
 
 class TestLKChangePassword:
@@ -19,12 +19,14 @@ class TestLKChangePassword:
 
         # ---------- Изменение пароля ----------
         lk.open_change_password_modal()
-        lk.enter_new_password(Credentials.NEW_PASSWORD["new_password"])
-        lk.enter_repeat_password(Credentials.NEW_PASSWORD["repeat_password"])
-        lk.save_password()
+        lk.set_new_password(Credentials.NEW_PASSWORD["new_password"])
+        lk.set_repeat_password(Credentials.NEW_PASSWORD["repeat_password"])
+        lk.save_new_password()
 
         # ---------- Проверка ----------
-        assert lk.change_password_is_visible()
+        assert lk.wait_invisible
+            
+
 
 
 

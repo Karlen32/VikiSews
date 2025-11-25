@@ -2,6 +2,8 @@ import allure
 from pages.base_page import BasePage
 from locators.lk_locators import LKLocators
 from locators.lk_examples_locators import LKExamplesLocators
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class LKExamplesPage(BasePage):
@@ -31,12 +33,16 @@ class LKExamplesPage(BasePage):
 
     @allure.step("Загружаем обложку работы")
     def upload_cover(self, file_path):
-        el = self.wait_visible(LKExamplesLocators.COVER_UPLOAD_IMAGE_INPUT)
+        el = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(LKExamplesLocators.COVER_UPLOAD_IMAGE_INPUT)
+        )
         el.send_keys(file_path)
 
     @allure.step("Загружаем изображения галереи")
     def upload_gallery_images(self, *image_paths):
-        input_el = self.wait_visible(LKExamplesLocators.WORK_IMAGES_UPLOAD_INPUT)
+        input_el = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(LKExamplesLocators.WORK_IMAGES_UPLOAD_INPUT)
+        )
         for img in image_paths:
             input_el.send_keys(img)
 

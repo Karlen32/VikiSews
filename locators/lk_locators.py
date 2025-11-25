@@ -5,7 +5,7 @@ class LKLocators:
     """Локаторы личного кабинета"""
 
     # Кнопка открытия меню ЛК (иконка человека в шапке)
-    LK_ICON_BUTTON = (By.CSS_SELECTOR, "div.js-lk-dropdown a.header__icon-button")
+    LK_ICON_BUTTON = (By.CSS_SELECTOR, "button.header__icon-button.base-inline-flex")
     # Сам выпадающий контейнер
     LK_DROPDOWN = (By.CSS_SELECTOR,"div.lk-dropdown")
 
@@ -15,7 +15,7 @@ class LKLocators:
     # Пункты меню
     LK_MENU_ITEM = (By.CSS_SELECTOR,"ul.lk-dropdown__menu li.lk-dropdown__item")
 
-    # Конкретные пункты меню
+    # Конкретные пункты меню в хедере
     MENU_HOME = (
         By.XPATH,
         "//a[@href='/' and .//span[contains(text(),'Главная')]]"
@@ -107,7 +107,7 @@ class LKLocators:
 
     LK_LESSONS_LIBRARY_BUTTON = (
         By.XPATH,
-        "//a[@href='/personal/lessons-library/' and contains(text(), 'Библиотека уроков')]"
+        "//a[contains(@class, 'personal-cabinet-top-block__my-courses') and @href='/personal/lessons-library/']"
     )
 
     @staticmethod

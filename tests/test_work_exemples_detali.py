@@ -2,6 +2,7 @@ import pytest
 import allure
 from pages.work_examples_detail_page import WorkExamplesDetailPage
 from data.work_example_data import WORK_EXAMPLE_DATA
+from pages.favorites_page import FavoritesPage
 
 
 class TestWorkExamplesDetail:
@@ -40,14 +41,13 @@ class TestWorkExamplesDetail:
             assert msg.text.strip() == "Комментарий отправлен на модерацию"
 
 
-        
+    @pytest.mark.skip
+    @allure.title("Удаление примера работ из избранного")
+    def test_delete_work_example_from_favorites(self, driver_logged):
+        favorites = FavoritesPage(driver_logged)
 
-    
-
-
-        
-
-
+        favorites.open_favorites()
+        favorites.delete_first_favorite()
 
 
 
