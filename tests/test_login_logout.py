@@ -2,8 +2,7 @@ import pytest
 import allure
 from pages.login_page import LoginPage
 from pages.lk_page import LKPage
-from data.credentials import Credentials
-from locators.lk_locators import LKLocators
+from utils.credentials import Credentials
 
 
 class TestLogin:
@@ -15,23 +14,28 @@ class TestLogin:
         login = LoginPage(driver_prelogin)
         lk = LKPage(driver_prelogin)
 
-        login.open_login()
+        lk.click_login_icon()
         login.enter_email(Credentials.USER["email"])
         login.enter_password(Credentials.USER["password"])
         login.submit()
 
         lk.open_menu()
 
-        assert lk.email_visible()
+        assert lk.user_email_visible(), "Email пользователя не отображается — вход не выполнен"
 
     @pytest.mark.smoke
     @allure.title("Выход пользователя")
-    def test_logout(self, driver_logged):
+    def test_logout(self, driver_login_ui):
 
-        lk = LKPage(driver_logged)
+        lk = LKPage(driver_login_ui)
+        login = LoginPage(driver_login_ui)
 
+        # ---------- Логаут ----------
         lk.open_menu()
-        lk.select_profile()
-        lk.logout()
+        lk.go_to_profile()
+        login.logout_button()
+        login.logout_confirm_button()
 
-        assert lk.wait_not_visible(LKLocators.LK_ICON_BUTTON)
+        # ---------- Проверка ----------
+        assert login.email_input_visible(), "Пользователь не вышел из аккаунта"
+

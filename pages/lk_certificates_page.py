@@ -6,6 +6,8 @@ from locators.lk_bonus_certificates_buy_locators import LKBonusCertificatesBuyLo
 from locators.vykrojki_locators import VykrojkiLocators
 from locators.lk_locators import LKLocators
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class LKCertificatesPage(BasePage):
@@ -57,6 +59,7 @@ class LKCertificatesPage(BasePage):
         self.driver.execute_script(
             "arguments[0].scrollIntoView({block:'center'});", price_input
         )
+        self.driver.execute_script("window.scrollBy(0, -100);")
         time.sleep(0.2)
 
         ActionChains(self.driver).move_to_element(price_input).perform()
@@ -80,8 +83,27 @@ class LKCertificatesPage(BasePage):
 
     @allure.step("Переходим к оплате")
     def proceed_to_pay(self):
-        self.click(LKBonusCertificatesBuyLocators.NEXT_BUTTON)
-        self.click(LKBonusCertificatesBuyLocators.PAY_BUTTON)
+        # ---------- Ждём появления кнопки ----------
+        next_btn = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(LKBonusCertificatesBuyLocators.NEXT_BUTTON)
+        )
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'});", next_btn
+        )
+        self.driver.execute_script("window.scrollBy(0, -120);")  # Чуть вверх, чтобы шапка не перекрыла
+        time.sleep(0.3) 
+        self.driver.execute_script("arguments[0].click();", next_btn)
+
+        # ---------- Теперь ждём кнопку оплаты ----------
+        pay_btn = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(LKBonusCertificatesBuyLocators.PAY_BUTTON)
+        )
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block: 'center'});", pay_btn
+        )
+        self.driver.execute_script("window.scrollBy(0, -120);")
+        time.sleep(0.2)
+        pay_btn.click()
 
     @allure.step("Ждём iframe оплаты")
     def wait_payment_iframe(self):

@@ -1,5 +1,7 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import time
+
 
 
 class BasePage:
@@ -48,14 +50,15 @@ class BasePage:
     #      СКРОЛЛЫ / ХОВЕР
     # =====================
 
-    def scroll_into_view(self, locator, block: str = "center"):
-        """Скролл к элементу через scrollIntoView."""
+    def scroll_and_focus(self, locator):
         element = self.wait_visible(locator)
-        self.driver.execute_script(
-            "arguments[0].scrollIntoView({block: arguments[1]});",
-            element,
-            block,
-        )
+        self.driver.execute_script("""
+            arguments[0].scrollIntoView({block: "center"});
+        """, element)
+        self.driver.execute_script("window.scrollBy(0, -200);")
+        import time
+        time.sleep(0.2)
+
         return element
 
     def hover(self, locator):
@@ -77,3 +80,15 @@ class BasePage:
     def find_elements(self, locator):
         """Удобный помощник: список элементов без дополнительных ожиданий."""
         return self.driver.find_elements(*locator)
+
+
+    def wait_invisible(self, locator, SHORT_TIMEOUT=10):
+        return self.wait.until_not(EC.visibility_of_element_located(locator), timeout=SHORT_TIMEOUT)
+
+
+    def switch_to_new_window(self):
+        current = self.driver.current_window_handle
+        for handle in self.driver.window_handles:
+            if handle != current:
+                self.driver.switch_to.window(handle)
+                return handle

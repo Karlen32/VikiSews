@@ -15,7 +15,7 @@ def test_save_prelogin_cookies(driver):
     print("⚠️ Не авторизуйся! Просто закрой всплывающие окна.")
     print("⏳ У тебя есть 60 секунд, потом я сохраню cookies.\n")
 
-    time.sleep(60)  # можешь увеличить, если нужно больше времени
+    time.sleep(25)  # можешь увеличить, если нужно больше времени
 
     cookies = driver.get_cookies()
     with open("prelogin_cookies.json", "w", encoding="utf-8") as f:

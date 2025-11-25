@@ -47,7 +47,7 @@ class BaseLocators:
     # Блог
     BURGER_ITEM_BLOG = (
         By.XPATH,
-        "//a[@href='/blog']/span[contains(normalize-space(), 'блог')]"
+        "//a[@href='/blog/']/span[contains(translate(., 'БЛОГ', 'блог'), 'блог')]"
     )
 
     # Примеры работ

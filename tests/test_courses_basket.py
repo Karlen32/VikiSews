@@ -1,5 +1,6 @@
 import pytest
 import allure
+import time
 from pages.courses_page import CoursesPage
 from pages.course_detail_page import CourseDetailPage
 
@@ -19,6 +20,7 @@ class TestCoursesBasket:
 
         with allure.step("Находим и ховерим первую карточку"):
             card = courses.get_first_course()
+            time.sleep(1)
             courses.hover_course(card)
 
         with allure.step("Нажимаем кнопку 'В корзину'"):

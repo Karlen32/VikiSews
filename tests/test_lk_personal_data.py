@@ -4,6 +4,7 @@ from pages.lk_page import LKPage
 from data.personal_info_data import PERSONAL_INFO_DATA
 
 
+
 class TestLKPersonalData:
 
     @pytest.mark.smoke
@@ -22,6 +23,8 @@ class TestLKPersonalData:
             page.set_last_name(PERSONAL_INFO_DATA["last_name"])
             page.set_chest(PERSONAL_INFO_DATA["boobs"])
             page.set_waist(PERSONAL_INFO_DATA["waist"])
+
+        
             page.set_hips(PERSONAL_INFO_DATA["hips"])
             page.set_height(PERSONAL_INFO_DATA["height"])
 
@@ -29,9 +32,7 @@ class TestLKPersonalData:
             page.save_personal_data()
 
         with allure.step("Проверяем успешное сохранение"):
-            message = page.success_message_visible()
-            assert "Данные успешно сохранены" in message.text
-
-
+            message = page.wait_success_message("Данные успешно сохранены")
+            assert message is not None
 
     

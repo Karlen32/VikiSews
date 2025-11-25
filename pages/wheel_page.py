@@ -27,7 +27,7 @@ class WheelPage(BasePage):
     def close_gift_button(self):
         self.click(WheelLocators.GIFT_CLOSE_BUTTON)
 
-    @allure.step("Закрываем модалку подарка через иконку")
+    @allure.step("Закрываем модалку подарка через иконку 'X'")
     def close_gift_icon(self):
         self.click(WheelLocators.GIFT_CLOSE_ICON_BUTTON)
 

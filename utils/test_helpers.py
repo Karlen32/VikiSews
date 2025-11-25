@@ -86,8 +86,6 @@ def select_product_params(driver, height_option, size_option, timeout=DEFAULT_TI
     WebDriverWait(driver, timeout).until(
         EC.visibility_of_element_located(height_selected)
     )
-
-    # Небольшая задержка для перерисовки размеров
     WebDriverWait(driver, SHORT_TIMEOUT).until(
         lambda d: d.find_element(*size_dropdown).is_enabled()
     )
@@ -95,6 +93,7 @@ def select_product_params(driver, height_option, size_option, timeout=DEFAULT_TI
     # --------------------------
     # 2. Выбор размера
     # --------------------------
+    # Обязательная принудительная пауза перед выбором размера
     time.sleep(3)
     WebDriverWait(driver, timeout).until(
         EC.element_to_be_clickable(size_dropdown)

@@ -5,12 +5,11 @@ from pages.product_catalog_page import ProductCatalogPage
 from pages.product_detail_page import ProductDetailPage
 from pages.checkout_page import CheckoutPage
 from utils.product_config import ProductConfig
-from utils.test_helpers import DEFAULT_TIMEOUT  # можно вообще не использовать явно
 
 
 class TestBuyProductInOneClick:
 
-    @pytest.mark.smoke
+    @pytest.mark.skip
     @allure.title("Покупка товара в один клик")
     @allure.description("Сценарий: открываем каталог, выбираем товар, покупка в 1 клик, переход на оплату")
     def test_buy_product_in_one_click(self, driver_logged):

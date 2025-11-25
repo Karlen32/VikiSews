@@ -1,5 +1,6 @@
 import pytest
 import allure
+import time
 from pages.lk_certificates_page import LKCertificatesPage
 from data.title_text import AllTexts
 from data.certificate_data import CERTIFICATE_FRIEND_DATA
@@ -40,6 +41,7 @@ class TestBuyCertificateFriend:
         with allure.step("Заполняем номер телефона"):
             page.select_phone_tab()
             page.enter_phone(CERTIFICATE_FRIEND_DATA["phone"])
+            time.sleep(2)
 
         with allure.step("Переходим к оплате"):
             page.proceed_to_pay()
