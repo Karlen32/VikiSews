@@ -97,12 +97,30 @@ class WorkExamplesDetailPage(BasePage):
     @allure.step("Оставляем комментарий")
     def send_comment(self, text, image_path):
         input_el = self.wait_visible(WorkExamplesDetailLocators.COMMENTS_TEXTAREA_INPUT)
+
+        # Скроллим к полю ввода
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'});", 
+            input_el
+        )
+        time.sleep(0.3)
+
         input_el.send_keys(text)
-
         img_input = self.wait_visible(WorkExamplesDetailLocators.COMMENTS_UPLOAD_IMAGE_INPUT)
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'});", 
+            img_input
+        )
+        time.sleep(0.3)
         img_input.send_keys(image_path)
+        send_btn = self.wait_visible(WorkExamplesDetailLocators.COMMENTS_SEND_BUTTON)
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'});", 
+            send_btn
+        )
+        time.sleep(0.3)
+        send_btn.click()
 
-        self.click(WorkExamplesDetailLocators.COMMENTS_SEND_BUTTON)
 
     @allure.step("Проверяем сообщение после отправки")
     def wait_comment_sent(self):

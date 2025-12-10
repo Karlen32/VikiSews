@@ -1,0 +1,78 @@
+[
+    {
+        "domain": "viki-prod.ilar.dev-ilar.com",
+        "httpOnly": false,
+        "name": "BITRIX_SM_SOUND_LOGIN_PLAYED",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "Y"
+    },
+    {
+        "domain": "viki-prod.ilar.dev-ilar.com",
+        "expiry": 1780527934,
+        "httpOnly": false,
+        "name": "hide_cookie",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "yes"
+    },
+    {
+        "domain": ".viki-prod.ilar.dev-ilar.com",
+        "httpOnly": false,
+        "name": "county-code",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "0000028023"
+    },
+    {
+        "domain": ".viki-prod.ilar.dev-ilar.com",
+        "httpOnly": false,
+        "name": "name-country",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "Russian%20Federation"
+    },
+    {
+        "domain": "viki-prod.ilar.dev-ilar.com",
+        "expiry": 1796295926,
+        "httpOnly": false,
+        "name": "BITRIX_CONVERSION_CONTEXT_s1",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "%7B%22ID%22%3A1%2C%22EXPIRE%22%3A1764795540%2C%22UNIQUE%22%3A%5B%22conversion_visit_day%22%5D%7D"
+    },
+    {
+        "domain": "viki-prod.ilar.dev-ilar.com",
+        "expiry": 1796295932,
+        "httpOnly": false,
+        "name": "hide_banner",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "yes"
+    },
+    {
+        "domain": "viki-prod.ilar.dev-ilar.com",
+        "expiry": 1764761124,
+        "httpOnly": true,
+        "name": "YCLB",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "\"00c72bdb6941285a\""
+    },
+    {
+        "domain": "viki-prod.ilar.dev-ilar.com",
+        "httpOnly": true,
+        "name": "PHPSESSID",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "4xLMpwwUZtyGgD2APSUzpItGgACDMh1z"
+    }
+]

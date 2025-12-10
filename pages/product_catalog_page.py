@@ -37,7 +37,7 @@ class ProductCatalogPage(BasePage):
             arguments[0].dispatchEvent(new MouseEvent('mouseenter', {bubbles:true}));
         """, card)
 
-        time.sleep(2)
+        time.sleep(3)
 
     @allure.step("Нажимаем кнопку избранного на карточке")
     def click_favorite(self):

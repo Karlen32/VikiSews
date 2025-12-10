@@ -9,9 +9,8 @@ from utils.product_config import ProductConfig
 
 class TestBuyProductInOneClick:
 
-    @pytest.mark.skip
+    @pytest.mark.skip(reason="Тест пока не нужен, покупка товара в один клик откючена")
     @allure.title("Покупка товара в один клик")
-    @allure.description("Сценарий: открываем каталог, выбираем товар, покупка в 1 клик, переход на оплату")
     def test_buy_product_in_one_click(self, driver_logged):
         driver = driver_logged
 

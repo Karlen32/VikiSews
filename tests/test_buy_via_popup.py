@@ -1,5 +1,6 @@
 import pytest
 import allure
+import time
 from pages.product_detail_page import ProductDetailPage
 from pages.checkout_page import CheckoutPage
 from utils.product_config import ProductConfig
@@ -30,7 +31,7 @@ class TestBuyProductViaPopup:
 
         with allure.step("Подтверждаем обязательные чекбоксы"):
             checkout.confirm_conditions()
-
+            time.sleep(2)
         with allure.step("Переходим на оплату"):
             checkout.go_to_payment_step()
 

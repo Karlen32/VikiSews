@@ -41,7 +41,7 @@ class CheckoutPage(BasePage):
 
     @allure.step("Ожидаем успешную оплату")
     def wait_success(self):
-        self.wait_visible(VykrojkiLocators.PAYMENT_PAGE_HEADER)
+        self.wait_visible(VykrojkiLocators.THANK_YOU_TITLE)
 
     
 

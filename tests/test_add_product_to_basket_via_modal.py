@@ -33,7 +33,7 @@ class TestAddProductToBasketViaModal:
         with allure.step("Подтверждаем добавление товара в корзину"):
             basket.click_modal_add_buttons()
 
-    
+    @pytest.mark.smoke
     @allure.title("Удаление товара из корзины")
     def test_delete_product_from_basket(self, driver_logged):
 

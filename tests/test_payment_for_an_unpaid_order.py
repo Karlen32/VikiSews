@@ -2,10 +2,12 @@ from pages.my_orders_page import MyOrdersPage
 from pages.checkout_page import CheckoutPage
 import allure
 import time
+import pytest
 
 
 class TestPaymentForAnUnpaidOrder:
 
+    @pytest.mark.smoke
     @allure.feature("Мои заказы")
     @allure.story("Оплата неоплаченного заказа")
     def test_payment_for_an_unpaid_order(self, driver_logged):

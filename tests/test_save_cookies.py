@@ -1,11 +1,13 @@
 import time
 import json
 import pytest
+import allure
 from urls.urls import Urls
 
 
 
-@pytest.mark.skip
+@pytest.mark.skip(reason="Тест нужно запустит отделно и сохранить cookies вручную, с авторизацией")
+@allure.title("Сохранение cookies и localstorage с авторизацией")
 def test_save_cookies_and_localstorage(driver):
     driver.get(Urls.BASE_URL)
     time.sleep(60)  # Время, чтобы вручную залогиниться
