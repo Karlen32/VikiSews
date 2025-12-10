@@ -4,10 +4,12 @@ from pages.product_detail_page import ProductDetailPage
 from utils.product_config import ProductConfig
 import allure
 import time
+import pytest
 
 
 class TestChangeOrderSize:
 
+    @pytest.mark.smoke
     @allure.feature("Мои заказы")
     @allure.story("Изменение размера заказа")
     def test_change_order_size(self, driver_logged):

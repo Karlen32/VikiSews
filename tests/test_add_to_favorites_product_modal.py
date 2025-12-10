@@ -28,8 +28,9 @@ class TestAddToFavoritesFromProductModal:
         with allure.step("Проверяем всплывающее сообщение"):
             msg = page.wait_favorite_added_message()
             assert "Товар добавлен в избранное" in msg.text
+            
 
-
+    @pytest.mark.smoke
     @allure.title("Удаление товара из избранного через шапку")
     @allure.description("Переход по иконке, удаление первого товара")
     def test_delete_favorites_from_header(self, driver_logged):

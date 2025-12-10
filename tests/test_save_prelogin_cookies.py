@@ -1,10 +1,12 @@
 import json
 import time
 import pytest
+import allure
 from urls.urls import Urls
 
 
-@pytest.mark.skip
+@pytest.mark.skip(reason="Тест нужно запустит отделно и сохранить cookies вручную, без авторизации")
+@allure.title("Сохранение cookies без авторизации")
 def test_save_prelogin_cookies(driver):
     
     driver.get(Urls.BASE_URL)

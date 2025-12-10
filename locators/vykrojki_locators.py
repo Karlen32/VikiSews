@@ -134,6 +134,11 @@ class VykrojkiLocators:
     "//div[contains(@class,'card-edit__header') and normalize-space(text())='Оплатить картой']"
     )
 
+    THANK_YOU_TITLE = (
+        By.XPATH,
+        "//h1[contains(@class,'h1--bold') and contains(translate(., 'БЛАГОДАРИМ ВАС ЗА ПОКУПКУ!', 'благодарим вас за покупку!'), 'благодарим вас за покупку')]"
+    )
+
     # --- Кнопки ---
     ADD_TO_BASKET_BUTTON = (By.XPATH,"//button[contains(normalize-space(.), 'В корзину')]")
     BUY_ONE_CLICK_BUTTON = (By.XPATH,"//button[contains(@class, 'pattern-right-part__buy-link') and contains(@class, 'js-add-basket-click')]")

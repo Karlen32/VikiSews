@@ -2,11 +2,13 @@ import allure
 from pages.my_orders_page import MyOrdersPage
 from pages.lk_page import LKPage
 from locators.lk_orders_locators import LKOrdersLocators
+import pytest
 
 
 
 class TestMyOrders:
 
+    @pytest.mark.smoke
     @allure.feature("Мои заказы")
     @allure.story("Вкладки")
     def test_orders_tabs(self, driver_logged):
@@ -21,6 +23,7 @@ class TestMyOrders:
         page.switch_to_canceled_orders()
         page.switch_to_all_orders()
 
+    @pytest.mark.smoke
     @allure.feature("Мои заказы")
     @allure.story("Список заказов")
     def test_orders_list_not_empty(self, driver_logged):
@@ -33,6 +36,7 @@ class TestMyOrders:
         orders = page.get_orders()
         assert len(orders) > 0
 
+    @pytest.mark.smoke
     @allure.feature("Мои заказы")
     @allure.story("Раскрытие заказа")
     def test_order_accordion_expand(self, driver_logged):
@@ -46,6 +50,7 @@ class TestMyOrders:
         assert order is not None
 
 
+    @pytest.mark.smoke
     @allure.feature("Мои заказы")
     @allure.story("Содержимое заказа")
     def test_order_content_exists(self, driver_logged):
@@ -63,6 +68,7 @@ class TestMyOrders:
         order.find_element(*LKOrdersLocators.ORDER_PAYMENT_METHOD)
         order.find_element(*LKOrdersLocators.ORDER_TOTAL_PRICE)
 
+    @pytest.mark.smoke
     @allure.feature("Мои заказы")
     @allure.story("Товары внутри заказа")
     def test_order_products(self, driver_logged):
@@ -81,3 +87,5 @@ class TestMyOrders:
         first.find_element(*LKOrdersLocators.PRODUCT_TITLE)
         first.find_element(*LKOrdersLocators.PRODUCT_PRICE)
         first.find_element(*LKOrdersLocators.PRODUCT_IMAGE)
+
+        

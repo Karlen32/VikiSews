@@ -1,6 +1,6 @@
 import allure
 from pages.base_page import BasePage
-from locators.blog_locators import BlogLocators
+from locators.blog_locators import BlogDetailLocators
 from locators.base_locators import BaseLocators
 
 
@@ -13,76 +13,54 @@ class BlogMainPage(BasePage):
     @allure.step("Переходим в раздел 'Блог'")
     def open_blog_from_menu(self):
         self.click(BaseLocators.BURGER_ITEM_BLOG)
-        self.wait_visible(BlogLocators.BLOG_CARD)  # ждём любую карточку
+        self.wait_visible(BlogDetailLocators.BLOG_CARD)  # ждём появление карточек
 
     # ===============================
-    #        Методы получения
+    #        Открытие статьи
     # ===============================
-
-    @allure.step("Получаем карточку статьи по названию: {title}")
-    def get_card_by_title(self, title: str):
-        locator = BlogLocators.card_by_title(title)
-        card = self.wait_visible(locator)
-        return card
 
     @allure.step("Открываем статью по индексу: {index}")
     def open_article_by_index(self, index: int):
-        cards = self.driver.find_elements(*BlogLocators.BLOG_CARD)
-        assert len(cards) > index, f"Нет карточки с индексом {index}"
+        cards = self.driver.find_elements(*BlogDetailLocators.BLOG_CARD)
+
+        if len(cards) <= index:
+            raise AssertionError(
+                f"Нет карточки с индексом {index}. Найдено: {len(cards)}"
+            )
 
         card = cards[index]
-        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", card)
+
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'});", card
+        )
         card.click()
 
-        return self.wait_visible(BlogLocators.BLOG_TITLE)
-
-    # ===============================
-    #        Методы действий
-    # ===============================
+        # Дождаться детальной статьи
+        return self.wait_visible(BlogDetailLocators.BLOG_DETAIL_TITLE)
 
     @allure.step("Открываем статью по названию: {title}")
     def open_article_by_title(self, title: str):
-        card = self.get_card_by_title(title)
-        self.scroll_into_view(BlogLocators.card_by_title(title))
-        card.click()
-        self.wait_visible(BlogLocators.BLOG_TITLE)
+        locator = BlogDetailLocators.card_by_title(title)
+        card = self.wait_visible(locator)
 
-    @allure.step("Открываем статью по индексу: {index}")
-    def open_article_by_index(self, index: int):
-        cards = self.driver.find_elements(*BlogLocators.BLOG_CARD)
-        try:
-            card = cards[index]
-        except IndexError:
-            raise AssertionError(f"❌ Карточки с индексом {index} не существует")
-
-        self.scroll_to_element(card)
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'});", card
+        )
         card.click()
-        self.wait_visible(BlogLocators.BLOG_TITLE)
+        self.wait_visible(BlogDetailLocators.BLOG_DETAIL_TITLE)
 
     # ===============================
-    #   Методы получения данных статьи
+    #   Методы получения данных
     # ===============================
 
     @allure.step("Получаем заголовок статьи")
     def get_article_title(self):
-        return self.wait_visible(BlogLocators.BLOG_TITLE).text
+        return self.wait_visible(BlogDetailLocators.BLOG_DETAIL_TITLE).text
 
-    @allure.step("Получаем короткое описание статьи")
+    @allure.step("Получаем описание статьи")
     def get_article_description(self):
-        return self.wait_visible(BlogLocators.BLOG_DESCRIPTION).text
-
-    @allure.step("Получаем теги статьи")
-    def get_article_tags(self):
-        return [t.text for t in self.driver.find_elements(*BlogLocators.BLOG_TAGS_LIST)]
+        return self.wait_visible(BlogDetailLocators.BLOG_DESCRIPTION).text
 
     @allure.step("Получаем дату публикации статьи")
     def get_article_date(self):
-        return self.wait_visible(BlogLocators.BLOG_DATE).text
-
-    # ===============================
-    #   Вспомогательный скролл
-    # ===============================
-
-    def scroll_to_element(self, element):
-        """Скроллит именно к элементу, если на вход подан сам element, не локатор."""
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+        return self.wait_visible(BlogDetailLocators.BLOG_DATE).text

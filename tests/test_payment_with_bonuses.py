@@ -17,8 +17,8 @@ class TestPaymentWithBonuses:
 
         driver = select_product(
             ProductConfig.NAME,
-            ProductConfig.HEIGHT1,
-            ProductConfig.SIZE1
+            ProductConfig.HEIGHT3,
+            ProductConfig.SIZE3
         )
 
         detail = ProductDetailPage(driver)
@@ -33,7 +33,7 @@ class TestPaymentWithBonuses:
             basket.open_from_modal()
 
         with allure.step("Применяем бонусы"):
-            bonuses.apply_bonuses("220")
+            bonuses.apply_bonuses("110")
 
         with allure.step("Переходим к оформлению"):
             basket.open_checkout()

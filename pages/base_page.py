@@ -56,7 +56,6 @@ class BasePage:
             arguments[0].scrollIntoView({block: "center"});
         """, element)
         self.driver.execute_script("window.scrollBy(0, -200);")
-        import time
         time.sleep(0.2)
 
         return element
@@ -92,3 +91,8 @@ class BasePage:
             if handle != current:
                 self.driver.switch_to.window(handle)
                 return handle
+
+    def wait_all_visible(self, locator):
+        return self.wait.until(
+            EC.visibility_of_all_elements_located(locator)
+        )

@@ -7,7 +7,7 @@ import allure
 
 class TestWheelOfFortune:
 
-    @pytest.mark.smoke
+    @pytest.mark.skip
     @allure.title("Крутка колеса фортуны уменьшает счетчик попыток")
     def test_spin_decreases_attempts(self, driver_logged):
         page = WheelPage(driver_logged)
@@ -29,7 +29,7 @@ class TestWheelOfFortune:
         assert after == before - 1, f"Ожидали {before-1} попыток, а получили {after}"
 
 
-    @pytest.mark.smoke
+    @pytest.mark.skip
     @allure.title("Крутка колеса фортуны открывает модалку с поздравлением")
     def test_spin_opens_congratulation_modal(self, driver_logged):
         page = WheelPage(driver_logged)

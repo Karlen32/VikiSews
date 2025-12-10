@@ -68,7 +68,8 @@ class TestCoursesPageTexts:
             CoursesLocators.FREEDOM_EASE_TITLE,
             WorkExampleTextBlock.FREEDOM_EASE_TITLE_TEXT
         )
-    
+        
+    @pytest.mark.smoke
     @allure.title("Проверка вида страницы курса и перехода на GetCourse")
     def test_course_page_view(self, driver_logged):
 

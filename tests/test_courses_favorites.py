@@ -27,7 +27,7 @@ class TestCoursesFavorites:
             assert any(c in classes for c in ["active", "added"]), "❌ Курс не добавлен в избранное"
     
     
-    @pytest.mark.skip
+    @pytest.mark.skip(reason="не возможно зайти в избранное если добавлен курс")
     @allure.title("Проверка удаления курса из избранного")
     def test_delete_course_from_favorites(self, driver_logged):
 
